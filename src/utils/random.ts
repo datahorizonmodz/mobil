@@ -1,0 +1,3 @@
+export function hash2(x:number,z:number,seed=728391):number { let n=Math.imul(x|0,374761393)+Math.imul(z|0,668265263)+seed; n=Math.imul(n^(n>>>13),1274126177); return ((n^(n>>>16))>>>0)/4294967295; }
+export class Random { constructor(private state:number){} next(){this.state=(Math.imul(this.state,1664525)+1013904223)|0;return (this.state>>>0)/4294967296;} range(a:number,b:number){return a+(b-a)*this.next();} pick<T>(array:readonly T[]):T{return array[Math.floor(this.next()*array.length)];} }
+export function smooth(a:number,b:number,t:number){const v=Math.max(0,Math.min(1,(t-a)/(b-a)));return v*v*(3-2*v);}
