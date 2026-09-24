@@ -9,7 +9,7 @@ npm install
 npm run dev
 ```
 
-Open the URL printed by Vite. A browser with WebGL2 and WASM support is required. WebGPU is selected when the browser supports it; otherwise the game creates a WebGL engine.
+Open the URL printed by Vite. A browser with WebGL2 and WASM support is required. WebGL2 is the default renderer, including on mobile. WebGPU can be tested explicitly with `?renderer=webgpu`; if its first gameplay frame fails, the engine is recreated as WebGL2.
 
 ## Build and preview
 
@@ -28,7 +28,17 @@ npm run preview
 4. Set build command to `npm run build` and output directory to `dist`.
 5. Deploy. No environment variables are required.
 
-For manual static hosting, serve the complete `dist/` directory over HTTPS. The optional service worker is registered only in production.
+For manual static hosting, serve the complete `dist/` directory over HTTPS. The service worker is registered only in production. It uses a versioned cache, removes old caches, fetches navigation from the network first, and caches hashed Vite assets. After a new deployment, its controller change reloads an already controlled page once.
+
+If an Android PWA still shows an old build, reload it online. During QA, clear the site's storage/service worker in browser site settings, then reopen it. The version in `public/sw.js` must change on any future release that changes cache behavior.
+
+## Render diagnostics
+
+- `?safe=1`: WebGL2, nearby chunks, no reflection probes/shadows/post effects, and reliable sky/water materials. Core world and physics still run.
+- `?renderer=webgl` or `?renderer=webgpu`: isolate a rendering backend. WebGPU is experimental for this game.
+- `?debug=1`: show the diagnostic panel on mobile without an F3 keyboard. It includes boot stage, renderer, canvas size, camera, active meshes, chunks, wheel contact, speed, shader state, and failed stages. F3 still toggles it on desktop.
+
+The loading screen remains until the gameplay scene is structurally validated and at least one first frame renders. Fatal failures show the stage and renderer with a safe mode action. If the real world cannot initialize, a small labeled diagnostic scene is attempted behind the error overlay to distinguish engine failure from world failure.
 
 ## How to play
 
@@ -51,7 +61,7 @@ The game autosaves the driver name, vehicle, paint, graphics, audio, UI and time
 - Original generated albedo, normal and packed roughness/metallic/AO maps for ten surfaces. Regenerate using `python3 scripts/generate_textures.py` (requires Pillow and NumPy).
 - PBR vehicle materials, limited environment probes, dynamic sun, night lamps, headlights, fog, procedural sky and animated water shader.
 - Graphics presets and working overrides for resolution scale, shadow resolution, draw distance, vegetation density, FPS cap, FXAA, bloom and reflection probe. Changes to these render features take effect on the next drive.
-- Responsive lobby, garage, settings, pause, HUD, synthesized engine tone, gamepad/touch controls, manifest and offline asset cache.
+- Responsive lobby, garage, settings, pause, HUD, synthesized engine tone, gamepad/touch controls, manifest and versioned offline asset cache.
 
 ## Architecture
 
@@ -70,10 +80,11 @@ The game autosaves the driver name, vehicle, paint, graphics, audio, UI and time
 npm run typecheck
 npm run test:physics
 npm run test:ui
+npm run test:runtime
 npm run build
 ```
 
-The physics smoke test initializes Havok with a NullEngine, streams the authored world, drives/brakes the hatchback for six simulated seconds, verifies wheel contact and motion, then checks chunk unloading/regeneration and the bridge. The UI smoke test exercises the lobby, garage, paint selector, graphics override and HUD. Browser performance varies by GPU; start with AUTO or LOW on mobile.
+The physics smoke test initializes Havok with a NullEngine, streams the authored world, drives/brakes the hatchback for six simulated seconds, verifies wheel contact and motion, then checks chunk unloading/regeneration and the bridge. The UI smoke test exercises menus and HUD. The runtime test verifies active terrain/road/car/sky/building meshes, a valid chase camera, renderer policy, safe graphics, pointer GO, four wheel contacts and real Havok movement. NullEngine cannot prove GPU pixels or Android behavior; verify the rebuilt deployment on a WebGL2 capable device, ideally with `?debug=1` during QA.
 
 ## Scope and current limits
 

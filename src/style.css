@@ -10,3 +10,4 @@
 .settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
 
 .menu-panel,.settings-scroll{touch-action:pan-y}.touch-controls button{touch-action:none}
+.runtime-error{z-index:50;pointer-events:auto;background:linear-gradient(90deg,#132631 0%,#132631e8 50%,#13263177 100%)}.runtime-error h2{font-size:clamp(50px,8vw,92px)}.runtime-error p{line-height:1.6;overflow-wrap:anywhere}.runtime-actions{display:flex;gap:12px;flex-wrap:wrap}.runtime-actions button{min-width:140px}.debug-panel{max-width:min(430px,54vw);max-height:62vh;overflow:hidden;white-space:pre-wrap;overflow-wrap:anywhere}@media(max-width:800px){.debug-panel{top:66px;left:10px;right:auto;max-width:min(85vw,390px);max-height:48vh;font-size:9px}.runtime-error{background:#132631d9}}

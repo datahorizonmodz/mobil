@@ -16,7 +16,10 @@ export class Controls {
   private blur=()=>{this.keys.clear();this.touches.clear();};
   private bindTouch(){this.target.querySelectorAll<HTMLElement>('[data-drive]').forEach(el=>{
     const action=el.dataset.drive as Action;
-    el.addEventListener('pointerdown',e=>{e.preventDefault();el.setPointerCapture(e.pointerId);this.touches.add(action);el.classList.add('pressed');});
+    el.addEventListener('pointerdown',e=>{
+      e.preventDefault();this.touches.add(action);el.classList.add('pressed');
+      try{el.setPointerCapture?.(e.pointerId);}catch(error){console.warn('[Coastline] Pointer capture unavailable',error);}
+    });
     for(const type of ['pointerup','pointercancel','lostpointercapture'])el.addEventListener(type,()=>{this.touches.delete(action);el.classList.remove('pressed');});
   });}
   consume(event:'camera'|'reset'|'pause'|'debug'|'map') {const key=`${event}Request` as const;const result=this[key];this[key]=false;return result;}

@@ -1,8 +1,8 @@
 {
   "project": "COASTLINE DRIVE",
-  "targetVersion": "1.0",
-  "checkpoint": "v1.0-build",
-  "status": "implementation complete; manual browser QA pending",
+  "targetVersion": "1.1.0",
+  "checkpoint": "v1.1-render-repair",
+  "status": "source repair and headless tests complete; affected Android GPU QA pending",
   "completedMilestones": [
     "infrastructure",
     "renderer",
@@ -23,10 +23,10 @@
     "mobile",
     "PWA"
   ],
-  "currentMilestone": "production validation",
+  "currentMilestone": "affected-device GPU validation",
   "pendingMilestones": [
-    "manual visual and gameplay browser QA"
+    "manual visual and gameplay QA on WebGL2 Android device after redeployment"
   ],
-  "nextAction": "Open the production preview in a WebGL2-capable browser and drive across districts.",
-  "buildStatus": "production build passed; static preview assets returned HTTP 200"
+  "nextAction": "Deploy source, open ?debug=1 on affected Android browser, and confirm real GPU pixels plus driving in normal and safe modes.",
+  "buildStatus": "fresh npm ci, typecheck, three smoke tests and final production build passed; 37 production preview paths HTTP 200 including Havok WASM"
 }

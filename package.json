@@ -1,6 +1,6 @@
 {
   "name": "coastline-drive",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -9,7 +9,8 @@
     "preview": "vite preview --host 0.0.0.0",
     "typecheck": "tsc --noEmit",
     "test:physics": "esbuild scripts/smoke-physics.ts --bundle --platform=node --format=esm --packages=external --outfile=scripts/.smoke.mjs && node scripts/.smoke.mjs",
-    "test:ui": "esbuild scripts/smoke-ui.ts --bundle --platform=node --format=esm --packages=external --outfile=scripts/.smoke-ui.mjs && node scripts/.smoke-ui.mjs"
+    "test:ui": "esbuild scripts/smoke-ui.ts --bundle --platform=node --format=esm --packages=external --outfile=scripts/.smoke-ui.mjs && node scripts/.smoke-ui.mjs",
+    "test:runtime": "esbuild scripts/smoke-runtime.ts --bundle --platform=node --format=esm --packages=external --outfile=scripts/.smoke-runtime.mjs && node scripts/.smoke-runtime.mjs"
   },
   "dependencies": {
     "@babylonjs/core": "^9.27.1",

@@ -8,6 +8,14 @@ export class DriveCamera {
     this.camera=new FreeCamera('drive-camera',new Vector3(0,4,-8),scene);
     this.camera.minZ=.12;this.camera.maxZ=1100;this.camera.fov=.84;scene.activeCamera=this.camera;
     this.target=vehicle.root.position.clone();
+    this.snap();
+  }
+  snap(){
+    const car=this.vehicle.root;car.computeWorldMatrix(true);
+    const forward=car.getDirection(Axis.Z).normalize();
+    this.camera.position=car.position.subtract(forward.scale(6.5)).add(new Vector3(0,3.05,0));
+    this.target=car.position.add(forward.scale(3)).add(new Vector3(0,.75,0));
+    this.camera.setTarget(this.target);
   }
   next(){this.index=(this.index+1)%MODES.length;}
   update(dt:number){
@@ -18,7 +26,8 @@ export class DriveCamera {
     if(mode==='HOOD'){dest=car.position.add(f.scale(this.vehicle.config.dimensions[2]*.32)).add(up.scale(.50));aim=dest.add(f.scale(22));}
     else if(mode==='COCKPIT'){dest=car.position.add(f.scale(.48)).add(up.scale(.49));aim=dest.add(f.scale(24));}
     else {const far=mode==='FAR';const distance=(far?11:6.5)+Math.min(3,speed*.018);dest=car.position.subtract(f.scale(distance)).add(new Vector3(0,far?5.1:3.05,0));
-      const delta=dest.subtract(car.position);const ray=new Ray(car.position.add(new Vector3(0,1.2,0)),delta.normalize(),delta.length());
+      const origin=car.position.add(new Vector3(0,1.2,0));const delta=dest.subtract(origin);
+      const distanceToCamera=delta.length();const ray=new Ray(origin,delta.normalize(),distanceToCamera);
       const hit=this.scene.pickWithRay(ray,m=>m.metadata?.ground===true);
       if(hit?.hit&&hit.distance>1)dest=ray.origin.add(ray.direction.scale(Math.max(1.7,hit.distance-.5)));
       aim=car.position.add(f.scale(3+speed*.028)).add(new Vector3(0,.75,0));}

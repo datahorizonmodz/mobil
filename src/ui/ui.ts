@@ -62,7 +62,7 @@ export class UI {
     }));
   }
   showLoading(stage:string,progress:number){
-    if(!this.loading){this.app.innerHTML=`<div class="loading-screen"><div class="load-brand">COASTLINE <span>// DRIVE</span></div><div class="load-center"><div class="load-ring"></div><h2>THE ROAD<br><em>IS WAITING.</em></h2><p id="load-stage"></p><div class="load-track"><div id="load-fill"></div></div><span id="load-percent"></span></div><small>PREPARING YOUR DRIVE</small></div>`;this.loading=this.app.querySelector('.loading-screen');}
+    if(!this.loading?.isConnected){this.app.innerHTML=`<div class="loading-screen"><div class="load-brand">COASTLINE <span>// DRIVE</span></div><div class="load-center"><div class="load-ring"></div><h2>THE ROAD<br><em>IS WAITING.</em></h2><p id="load-stage"></p><div class="load-track"><div id="load-fill"></div></div><span id="load-percent"></span></div><small>PREPARING YOUR DRIVE</small></div>`;this.loading=this.app.querySelector('.loading-screen');}
     this.loading!.querySelector('#load-stage')!.textContent=stage;
     (this.loading!.querySelector('#load-fill') as HTMLElement).style.width=`${progress}%`;
     this.loading!.querySelector('#load-percent')!.textContent=`${Math.round(progress)}%`;
@@ -93,6 +93,16 @@ export class UI {
   updateDebug(text:string){if(this.debug)this.debug.textContent=text;}
   toggleMap(){this.mapOpen=!this.mapOpen;this.hud?.classList.toggle('map-expanded',this.mapOpen);}
   showError(message:string){this.app.innerHTML=`<div class="error-screen"><div class="brand-word">COASTLINE // DRIVE</div><h2>COULD NOT START<br>THE ENGINE.</h2><p>${escapeHTML(message)}</p><button class="primary" id="reload">RETRY</button></div>`;this.app.querySelector('#reload')?.addEventListener('click',()=>location.reload());}
+  showRuntimeError(stage:string,backend:string,error:unknown){
+    if(this.app.querySelector('.runtime-error'))return;
+    const message=error instanceof Error?error.message:String(error);
+    const query=new URLSearchParams(location.search);query.set('safe','1');query.set('renderer','webgl');
+    const screen=document.createElement('div');screen.className='error-screen runtime-error';
+    screen.innerHTML=`<div class="brand-word">COASTLINE // DRIVE</div><h2>3D RENDER<br>INTERRUPTED.</h2><p>Stage: ${escapeHTML(stage)} · ${escapeHTML(backend)} · ${matchMedia('(pointer:coarse)').matches?'MOBILE':'DESKTOP'}<br>${escapeHTML(message)}</p><p>Try safe graphics if your browser cannot render this scene.</p><div class="runtime-actions"><button class="primary" data-runtime="safe">SAFE MODE</button><button class="secondary" data-runtime="reload">RELOAD</button></div>`;
+    this.app.append(screen);
+    screen.querySelector('[data-runtime="reload"]')?.addEventListener('click',()=>location.reload());
+    screen.querySelector('[data-runtime="safe"]')?.addEventListener('click',()=>{location.href=`${location.pathname}?${query}`;});
+  }
   clearGameplay(){this.hud=null;this.loading=null;this.pauseLayer=null;this.debug=null;this.app.innerHTML='';}
   private applyScale(){document.documentElement.style.setProperty('--ui-scale',String(this.save.uiScale));document.documentElement.classList.toggle('reduced-motion',this.save.reducedMotion);}
 }
